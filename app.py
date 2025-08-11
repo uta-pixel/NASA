@@ -1,35 +1,34 @@
 import streamlit as st
-from pathlib import Path
+import requests
 
-# Set page configuration (optional)
-st.set_page_config(page_title="فارسی وب اپ", page_icon="📊", layout="wide")
+st.title("💬 چت با پشتیبانی")
 
-# Sidebar menu in Persian
-with st.sidebar:
-    selected_page = st.selectbox("منو", ["صفحه اصلی", "درباره ما"])
+# دکمه لینک به تلگرام
+st.markdown("""
+<a href="https://t.me/HamPayamBot" target="_blank" 
+   style="display: inline-block;
+          background: #0088cc;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 5px;">
+   💬 شروع چت در تلگرام
+</a>
+""", unsafe_allow_html=True)
 
-# Main content area
-st.title("به برنامه من خوش آمدید")  # Welcome to my app
-
-# Handle logo with error checking
-try:
-    logo_path = Path("logo.png")
-    if logo_path.is_file():
-        st.image("logo.png", width=200)  # Adjust width as needed
-    else:
-        st.warning("لوگو یافت نشد. لطفا فایل logo.png را در همان پوشه قرار دهید.")
-        # Display placeholder if logo is missing
-        st.image("https://via.placeholder.com/200x100?text=لوگوی+شما", 
-                width=200,
-                caption="لوگوی شما اینجا قرار می‌گیرد")
-except Exception as e:
-    st.error(f"خطا در نمایش لوگو: {e}")
-
-# Page content based on selection
-if selected_page == "صفحه اصلی":
-    st.header("صفحه اصلی")
-    st.write("این محتوای صفحه اصلی است.")
-    
-elif selected_page == "درباره ما":
-    st.header("درباره ما")
-    st.write("این بخش اطلاعات درباره ما را نمایش می‌دهد.")
+# فرم تماس
+with st.form("contact_form"):
+    name = st.text_input("نام شما")
+    message = st.text_area("پیام شما")
+    submitted = st.form_submit_button("ارسال به تلگرام")
+    if submitted:
+        try:
+            # ارسال پیام به ربات تلگرام
+            bot_token = "8373221356:AAE3ucKVTKeGSdPnKQglSmc69nIu34qWIys"
+            chat_id = "https://t.me/HamPayamBot"
+            text = f"پیام جدید از {name}:\n{message}"
+            url = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text={text}"
+            requests.get(url)
+            st.success("پیام شما ارسال شد!")
+        except:
+            st.error("خطا در ارسال پیام")
